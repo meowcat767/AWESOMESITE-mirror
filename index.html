@@ -101,3 +101,136 @@
         }
     </script>
 </html>
+<canvas id="warCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></canvas>
+    <script>
+        window.onload = function() {
+            var canvas = document.getElementById('warCanvas');
+            var ctx = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            var soldiers = [];
+            var bullets = [];
+
+            function createSoldier(x, y, color) {
+                soldiers.push({
+                    x: x,
+                    y: y,
+                    color: color,
+                    speed: 2,
+                    health: 100
+                });
+            }
+
+            function createBullet(x, y, angle) {
+                bullets.push({
+                    x: x,
+                    y: y,
+                    angle: angle,
+                    speed: 10
+                });
+            }
+
+            // Create initial soldiers
+            createSoldier(50, canvas.height / 2, 'blue');
+            createSoldier(canvas.width - 50, canvas.height / 2, 'red');
+
+            function drawSoldiers() {
+                for (var i = 0; i < soldiers.length; i++) {
+                    var soldier = soldiers[i];
+                    ctx.fillStyle = soldier.color;
+                    ctx.fillRect(soldier.x - 10, soldier.y - 15, 20, 30); // Draw soldier as a rectangle
+                }
+            }
+
+            function drawBullets() {
+                for (var i = 0; i < bullets.length; i++) {
+                    var bullet = bullets[i];
+                    ctx.beginPath();
+                    ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = 'black';
+                    ctx.fill();
+                }
+            }
+
+            function updateSoldiers() {
+                for (var i = 0; i < soldiers.length; i++) {
+                    var soldier = soldiers[i];
+
+                    // Basic AI: Move towards the other soldier and shoot
+                    var target = (soldier.color === 'blue') ? soldiers.find(s => s.color === 'red') : soldiers.find(s => s.color === 'blue');
+
+                    if (target) {
+                        var angle = Math.atan2(target.y - soldier.y, target.x - soldier.x);
+                        soldier.x += Math.cos(angle) * soldier.speed;
+                        soldier.y += Math.sin(angle) * soldier.speed;
+
+                        // Shoot at intervals
+                        if (Math.random() < 0.01) {
+                            createBullet(soldier.x, soldier.y, angle);
+                        }
+                    }
+
+                    // Keep soldiers within bounds
+                    soldier.x = Math.max(10, Math.min(soldier.x, canvas.width - 10));
+                    soldier.y = Math.max(15, Math.min(soldier.y, canvas.height - 15));
+                }
+            }
+
+            function updateBullets() {
+                for (var i = 0; i < bullets.length; i++) {
+                    var bullet = bullets[i];
+                    bullet.x += Math.cos(bullet.angle) * bullet.speed;
+                    bullet.y += Math.sin(bullet.angle) * bullet.speed;
+
+                    // Remove bullets that go out of bounds
+                    if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
+                        bullets.splice(i, 1);
+                        i--;
+                        continue;
+                    }
+
+                    // Check for collisions with soldiers
+                    for (var j = 0; j < soldiers.length; j++) {
+                        var soldier = soldiers[j];
+                        if (Math.abs(bullet.x - soldier.x) < 15 && Math.abs(bullet.y - soldier.y) < 20) {
+                            soldier.health -= 10;
+                            bullets.splice(i, 1);
+                            i--;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            function drawWar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawSoldiers();
+                drawBullets();
+            }
+
+            function updateGame() {
+                updateSoldiers();
+                updateBullets();
+            }
+
+
+            function gameLoop() {
+                updateGame();
+                drawWar();
+                requestAnimationFrame(gameLoop);
+            }
+
+            gameLoop();
+
+
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
+
+    </html>
+    <body> BEN </body>
