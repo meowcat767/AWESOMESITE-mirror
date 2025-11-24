@@ -1,10 +1,11 @@
+
 html {
   height: 100%;
   width: 100%;
 }
 
 body {
-  background: linear-gradient(300deg, #ff00f8, #ff0800, #0021ff);
+  background: linear-gradient(300deg,#ff00f8,#ff0800,#0021ff);
   background-size: 600% 600%;
   animation: gradient-animation 3s ease infinite;
   height: 100%;
@@ -15,11 +16,9 @@ body {
   0% {
     background-position: 0% 50%;
   }
-
   50% {
     background-position: 100% 50%;
   }
-
   100% {
     background-position: 0% 50%;
   }
@@ -40,31 +39,11 @@ img {
 }
 
 .dog {
-  position: fixed;
-  bottom: 100px;
-  left: 0;
+  position: relative;
   width: 100%;
-  z-index: 5;
-  pointer-events: none;
 }
 
 .dog marquee {
   display: block;
   width: 100%;
-}
-
-.dog img {
-  pointer-events: auto;
-}
-
-.rainbow-text {
-  font-family: Arial Black, Gadget, sans-serif;
-  text-align: center;
-  font-weight: bold;
-  font-size: 50px;
-  text-shadow: #A3A3A3 1px 1px 0px;
-}
-
-.rainbow-text .block-line>span {
-  display: inline-block;
 }
