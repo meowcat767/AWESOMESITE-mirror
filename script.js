@@ -46,3 +46,93 @@ document.head.appendChild(style);
 // Start the flash effect cycle (first one after 30-120 seconds)
 const initialDelay = (Math.random() * 90 + 30) * 1000;
 setTimeout(createFlashEffect, initialDelay);
+
+// Bouncing cat functionality
+window.addEventListener('load', function() {
+  const catImage = document.querySelector('.cat img');
+  if (!catImage) return;
+
+  // Make cat position absolute for bouncing
+  catImage.style.position = 'fixed';
+  catImage.style.width = '100px';
+  catImage.style.height = '100px';
+  catImage.style.zIndex = '10';
+  
+  let catX = Math.random() * (window.innerWidth - 100);
+  let catY = Math.random() * (window.innerHeight - 100);
+  let catSpeedX = 3;
+  let catSpeedY = 3;
+  let isExploded = false;
+
+  function updateCatPosition() {
+    if (isExploded) return;
+
+    catX += catSpeedX;
+    catY += catSpeedY;
+
+    // Bounce off walls
+    if (catX <= 0 || catX >= window.innerWidth - 100) {
+      catSpeedX = -catSpeedX;
+    }
+    if (catY <= 0 || catY >= window.innerHeight - 100) {
+      catSpeedY = -catSpeedY;
+    }
+
+    catImage.style.left = catX + 'px';
+    catImage.style.top = catY + 'px';
+
+    // Check collision with bombs
+    checkBombCollision();
+
+    requestAnimationFrame(updateCatPosition);
+  }
+
+  function checkBombCollision() {
+    // Get bombs from the canvas
+    const planesCanvas = document.getElementById('planesCanvas');
+    if (!planesCanvas) return;
+
+    // Access the bombs array from the global scope
+    if (typeof bombs !== 'undefined' && bombs.length > 0) {
+      for (let i = 0; i < bombs.length; i++) {
+        const bomb = bombs[i];
+        const distance = Math.sqrt(
+          Math.pow(bomb.x - (catX + 50), 2) + 
+          Math.pow(bomb.y - (catY + 50), 2)
+        );
+
+        if (distance < 55) {
+          explodeCat();
+          bombs.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+
+  function explodeCat() {
+    isExploded = true;
+    
+    // Play explosion sound
+    const explosionSound = new Audio('explosion.mp3');
+    explosionSound.play();
+
+    // Explosion animation
+    catImage.style.transition = 'transform 0.3s, opacity 0.3s';
+    catImage.style.transform = 'scale(2) rotate(360deg)';
+    catImage.style.opacity = '0';
+
+    // Restart cat after 2 seconds
+    setTimeout(() => {
+      catX = Math.random() * (window.innerWidth - 100);
+      catY = Math.random() * (window.innerHeight - 100);
+      catImage.style.transition = '';
+      catImage.style.transform = '';
+      catImage.style.opacity = '1';
+      isExploded = false;
+      updateCatPosition();
+    }, 2000);
+  }
+
+  updateCatPosition();
+});
