@@ -9,10 +9,94 @@
 </head>
 
 <body>
-  ben is propa scrungley
-  
+  <h1>ben is a dungus</h1>
   <img src="img/unnamed.jpg">
-  <script src="script.js"></script>
+  <br>
+  <div class="dog">
+  <marquee direction="right" scrollamount="50"><img src="https://i.postimg.cc/BntGZcD1/image-removebg-preview.png"
+</marquee>
+  </div>
+  <hr>
+  <p><small>this is a roof</small></p>
+    <marquee>SLOW DOWN</marquee>
+    <script src="script.js"></script>
 </body>
+  <canvas id="fireworksCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
+    <script>
+        window.onload = function() {
+            var canvas = document.getElementById('fireworksCanvas');
+            var ctx = canvas.getContext('2d');
+            var fireworks = [];
 
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            function createFirework() {
+                var x = Math.random() * canvas.width;
+                var y = canvas.height;
+                var color = 'hsl(' + Math.random() * 360 + ', 100%, 50%)';
+                var particleCount = 200;
+                var particles = [];
+
+                for (var i = 0; i < particleCount; i++) {
+                    var angle = Math.random() * Math.PI * 2;
+                    var speed = Math.random() * 10 + 5;
+                    particles.push({
+                        x: x,
+                        y: y,
+                        color: color,
+                        angle: angle,
+                        speed: speed,
+                        alpha: 1
+                    });
+                }
+
+                fireworks.push({
+                    particles: particles,
+                    x: x,
+                    y: y
+                });
+            }
+
+            function drawFireworks() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                for (var i = 0; i < fireworks.length; i++) {
+                    var firework = fireworks[i];
+
+                    for (var j = 0; j < firework.particles.length; j++) {
+                        var particle = firework.particles[j];
+
+                        ctx.beginPath();
+                        ctx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
+                        ctx.fillStyle = particle.color;
+                        ctx.globalAlpha = particle.alpha;
+                        ctx.fill();
+
+                        particle.x += Math.cos(particle.angle) * particle.speed;
+                        particle.y += Math.sin(particle.angle) * particle.speed;
+                        particle.alpha -= 0.005;
+                    }
+
+                    if (firework.particles[0].alpha <= 0) {
+                        fireworks.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+
+            setInterval(createFirework, 200);
+            function animationLoop() {
+                drawFireworks();
+                requestAnimationFrame(animationLoop);
+            }
+
+            animationLoop();
+
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+    </script>
 </html>

@@ -23,3 +23,17 @@ body {
     background-position: 0% 50%;
   }
 }
+
+h1 {
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
+  font-size: 70px;
+}
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%
+}
