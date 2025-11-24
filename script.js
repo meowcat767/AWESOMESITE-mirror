@@ -12,7 +12,7 @@ function createFlashEffect() {
   document.body.appendChild(flashContainer);
   
   // Play sound
-  const audio = new Audio('https://www.soundjay.com/button/sounds/beep-07.mp3');
+  const audio = new Audio('horn.mp3');
   audio.play();
   
   // Fade in
