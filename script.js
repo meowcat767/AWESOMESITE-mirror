@@ -58,36 +58,86 @@ window.addEventListener('load', function() {
   catImage.style.height = '100px';
   catImage.style.zIndex = '10';
   
-  let catX = Math.random() * (window.innerWidth - 100);
-  let catY = Math.random() * (window.innerHeight - 100);
-  let catSpeedX = 3;
-  let catSpeedY = 3;
-  let isExploded = false;
+  let cats = [{
+    element: catImage,
+    x: Math.random() * (window.innerWidth - 100),
+    y: Math.random() * (window.innerHeight - 100),
+    speedX: 3,
+    speedY: 3,
+    isExploded: false
+  }];
+
+  function createNewCat() {
+    const newCat = document.createElement('img');
+    newCat.src = catImage.src;
+    newCat.style.position = 'fixed';
+    newCat.style.width = '100px';
+    newCat.style.height = '100px';
+    newCat.style.zIndex = '10';
+    document.body.appendChild(newCat);
+    
+    const catObj = {
+      element: newCat,
+      x: Math.random() * (window.innerWidth - 100),
+      y: Math.random() * (window.innerHeight - 100),
+      speedX: (Math.random() - 0.5) * 6,
+      speedY: (Math.random() - 0.5) * 6,
+      isExploded: false
+    };
+    cats.push(catObj);
+    return catObj;
+  }
 
   function updateCatPosition() {
-    if (isExploded) return;
+    cats.forEach(cat => {
+      if (cat.isExploded) return;
 
-    catX += catSpeedX;
-    catY += catSpeedY;
+      cat.x += cat.speedX;
+      cat.y += cat.speedY;
 
-    // Bounce off walls
-    if (catX <= 0 || catX >= window.innerWidth - 100) {
-      catSpeedX = -catSpeedX;
-    }
-    if (catY <= 0 || catY >= window.innerHeight - 100) {
-      catSpeedY = -catSpeedY;
-    }
+      // Bounce off walls
+      if (cat.x <= 0 || cat.x >= window.innerWidth - 100) {
+        cat.speedX = -cat.speedX;
+      }
+      if (cat.y <= 0 || cat.y >= window.innerHeight - 100) {
+        cat.speedY = -cat.speedY;
+      }
 
-    catImage.style.left = catX + 'px';
-    catImage.style.top = catY + 'px';
+      cat.element.style.left = cat.x + 'px';
+      cat.element.style.top = cat.y + 'px';
 
-    // Check collision with bombs
-    checkBombCollision();
+      // Check collision with bombs
+      checkBombCollision(cat);
+      
+      // Check collision with dog
+      checkDogCollision(cat);
+    });
 
     requestAnimationFrame(updateCatPosition);
   }
+  
+  function checkDogCollision(cat) {
+    const dogImage = document.querySelector('.dog img');
+    if (!dogImage) return;
+    
+    const dogRect = dogImage.getBoundingClientRect();
+    const catRect = {
+      left: cat.x,
+      right: cat.x + 100,
+      top: cat.y,
+      bottom: cat.y + 100
+    };
+    
+    if (catRect.left < dogRect.right &&
+        catRect.right > dogRect.left &&
+        catRect.top < dogRect.bottom &&
+        catRect.bottom > dogRect.top) {
+      // Collision detected - create new cat
+      createNewCat();
+    }
+  }
 
-  function checkBombCollision() {
+  function checkBombCollision(cat) {
     // Get bombs from the canvas
     const planesCanvas = document.getElementById('planesCanvas');
     if (!planesCanvas) return;
@@ -97,12 +147,12 @@ window.addEventListener('load', function() {
       for (let i = 0; i < bombs.length; i++) {
         const bomb = bombs[i];
         const distance = Math.sqrt(
-          Math.pow(bomb.x - (catX + 50), 2) + 
-          Math.pow(bomb.y - (catY + 50), 2)
+          Math.pow(bomb.x - (cat.x + 50), 2) + 
+          Math.pow(bomb.y - (cat.y + 50), 2)
         );
 
         if (distance < 55) {
-          explodeCat();
+          explodeCat(cat);
           bombs.splice(i, 1);
           break;
         }
@@ -110,27 +160,26 @@ window.addEventListener('load', function() {
     }
   }
 
-  function explodeCat() {
-    isExploded = true;
+  function explodeCat(cat) {
+    cat.isExploded = true;
     
     // Play explosion sound
     const explosionSound = new Audio('explosion.mp3');
     explosionSound.play();
 
     // Explosion animation
-    catImage.style.transition = 'transform 0.3s, opacity 0.3s';
-    catImage.style.transform = 'scale(2) rotate(360deg)';
-    catImage.style.opacity = '0';
+    cat.element.style.transition = 'transform 0.3s, opacity 0.3s';
+    cat.element.style.transform = 'scale(2) rotate(360deg)';
+    cat.element.style.opacity = '0';
 
     // Restart cat after 2 seconds
     setTimeout(() => {
-      catX = Math.random() * (window.innerWidth - 100);
-      catY = Math.random() * (window.innerHeight - 100);
-      catImage.style.transition = '';
-      catImage.style.transform = '';
-      catImage.style.opacity = '1';
-      isExploded = false;
-      updateCatPosition();
+      cat.x = Math.random() * (window.innerWidth - 100);
+      cat.y = Math.random() * (window.innerHeight - 100);
+      cat.element.style.transition = '';
+      cat.element.style.transform = '';
+      cat.element.style.opacity = '1';
+      cat.isExploded = false;
     }, 2000);
   }
 

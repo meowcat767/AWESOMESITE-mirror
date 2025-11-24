@@ -40,13 +40,21 @@ img {
 }
 
 .dog {
-  position: relative;
+  position: fixed;
+  bottom: 100px;
+  left: 0;
   width: 100%;
+  z-index: 5;
+  pointer-events: none;
 }
 
 .dog marquee {
   display: block;
   width: 100%;
+}
+
+.dog img {
+  pointer-events: auto;
 }
 
 .rainbow-text {
