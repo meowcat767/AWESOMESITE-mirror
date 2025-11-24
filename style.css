@@ -1,16 +1,15 @@
+
 html {
   height: 100%;
   width: 100%;
 }
 
 body {
-  background-color: gradient-background;
-}
-
-.gradient-background {
   background: linear-gradient(300deg,#ff00f8,#ff0800,#0021ff);
-  background-size: 180% 180%;a
+  background-size: 180% 180%;
   animation: gradient-animation 3s ease infinite;
+  height: 100%;
+  margin: 0;
 }
 
 @keyframes gradient-animation {
