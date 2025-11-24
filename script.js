@@ -1,21 +1,48 @@
 
-let dogCounter = 0;
-const marquee = document.querySelector('.dog marquee');
-const counterDisplay = document.createElement('div');
-
-counterDisplay.id = 'dogCounter';
-counterDisplay.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 15px 25px; border-radius: 10px; font-family: sans-serif; font-size: 24px; font-weight: bold; color: #333; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
-counterDisplay.textContent = `Dog Trips: ${dogCounter}`;
-document.body.appendChild(counterDisplay);
-
-function checkMarqueePosition() {
-  const marqueeRect = marquee.getBoundingClientRect();
+// Flash image and sound effect at random intervals (30-120 seconds)
+function createFlashEffect() {
+  const flashContainer = document.createElement('div');
+  flashContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; transition: opacity 0.3s;';
   
-  // Check if the marquee has reached the right edge
-  if (marqueeRect.right >= window.innerWidth - 10) {
-    dogCounter++;
-    counterDisplay.textContent = `Dog Trips: ${dogCounter}`;
-  }
+  const flashImage = document.createElement('img');
+  flashImage.src = 'https://i.postimg.cc/BntGZcD1/image-removebg-preview.png';
+  flashImage.style.cssText = 'max-width: 80%; max-height: 80%; animation: bounce 0.5s ease-in-out;';
+  
+  flashContainer.appendChild(flashImage);
+  document.body.appendChild(flashContainer);
+  
+  // Play sound
+  const audio = new Audio('https://www.soundjay.com/button/sounds/beep-07.mp3');
+  audio.play();
+  
+  // Fade in
+  setTimeout(() => {
+    flashContainer.style.opacity = '1';
+  }, 10);
+  
+  // Fade out and remove after 2 seconds
+  setTimeout(() => {
+    flashContainer.style.opacity = '0';
+    setTimeout(() => {
+      document.body.removeChild(flashContainer);
+    }, 300);
+  }, 2000);
+  
+  // Schedule next flash at random interval (30-120 seconds)
+  const nextInterval = (Math.random() * 90 + 30) * 1000; // 30-120 seconds in milliseconds
+  setTimeout(createFlashEffect, nextInterval);
 }
 
-setInterval(checkMarqueePosition, 100);
+// Add bounce animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+`;
+document.head.appendChild(style);
+
+// Start the flash effect cycle (first one after 30-120 seconds)
+const initialDelay = (Math.random() * 90 + 30) * 1000;
+setTimeout(createFlashEffect, initialDelay);
