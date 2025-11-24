@@ -37,3 +37,13 @@ img {
   margin-right: auto;
   width: 50%
 }
+
+.dog {
+  position: relative;
+  width: 100%;
+}
+
+.dog marquee {
+  display: block;
+  width: 100%;
+}
